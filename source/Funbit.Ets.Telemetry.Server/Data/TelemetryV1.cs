@@ -73,6 +73,11 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public bool WipersOn { get; set; }
         public bool ParkBrakeOn { get; set; }
         public bool MotorBrakeOn { get; set; }
+        public bool DifferentialLock { get; set; }
+        public bool LiftAxle { get; set; }
+        public bool LiftAxleIndicator { get; set; }
+        public bool TrailerLiftAxle { get; set; }
+        public bool TrailerLiftAxleIndicator { get; set; }
 
         public float AirPressure { get; set; }
         public bool AirPressureWarningOn { get; set; }
@@ -92,6 +97,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
         public float BatteryVoltage { get; set; }
         public bool BatteryVoltageWarningOn { get; set; }
         public float BatteryVoltageWarningValue { get; set; }
+        public bool FuelWarningOn { get; set; }
 
         public float LightsDashboardValue { get; set; }
         public bool LightsDashboardOn { get; set; }

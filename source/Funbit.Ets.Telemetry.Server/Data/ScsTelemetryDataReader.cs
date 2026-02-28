@@ -117,6 +117,11 @@ namespace Funbit.Ets.Telemetry.Server.Data
                 WipersOn = dash?.Wipers ?? false,
                 ParkBrakeOn = motor?.BrakeValues?.ParkingBrake ?? false,
                 MotorBrakeOn = motor?.BrakeValues?.MotorBrake ?? false,
+                DifferentialLock = curr?.DifferentialLock ?? false,
+                LiftAxle= curr?.LiftAxle ?? false,
+                LiftAxleIndicator= curr?.LiftAxleIndicator ?? false,
+                TrailerLiftAxle= curr?.TrailerLiftAxle ?? false,
+                TrailerLiftAxleIndicator= curr?.TrailerLiftAxleIndicator ?? false,
 
                 AirPressure = motor?.BrakeValues?.AirPressure ?? 0f,
                 AirPressureWarningOn = dash?.WarningValues?.AirPressure ?? false,
@@ -136,6 +141,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
                 BatteryVoltage = dash?.BatteryVoltage ?? 0f,
                 BatteryVoltageWarningOn = dash?.WarningValues?.BatteryVoltage ?? false,
                 BatteryVoltageWarningValue = warn?.BatteryVoltage ?? 0f,
+                FuelWarningOn= dash?.WarningValues?.FuelW ?? false,
 
                 LightsDashboardValue = lights?.DashboardBacklight ?? 0f,
                 LightsDashboardOn = (lights?.DashboardBacklight ?? 0f) > 0f,
