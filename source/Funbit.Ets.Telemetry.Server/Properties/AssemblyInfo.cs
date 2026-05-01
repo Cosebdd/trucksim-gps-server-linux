@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("TruckSim GPS Telemetry Server")]
 [assembly: AssemblyDescription("TruckSim GPS Telemetry Server")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Trinity014")]
 [assembly: AssemblyProduct("TruckSim GPS")]
 [assembly: AssemblyCopyright("Copyright © Funbit 2016")]
 [assembly: AssemblyTrademark("")]
