@@ -30,6 +30,10 @@ namespace Funbit.Ets.Telemetry.Server.Data
             {
                 var scs = _sharedMemory.Update<SCSTelemetry>();
 
+                // Plugin can leave SdkActive=true after a hard crash; trust the process scan.
+                if (!Ets2ProcessHelper.IsEts2Running)
+                    scs = null;
+
                 var game = new GameV1
                 {
                     Connected = scs?.SdkActive == true,
@@ -37,6 +41,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
                     Time = scs?.CommonValues?.GameTime?.Date ?? DateTime.MinValue,
                     Paused = scs?.Paused ?? false,
                     Version = scs != null ? $"{scs.GameVersion.Major}.{scs.GameVersion.Minor}" : null,
+                    GameProductVersion = Ets2ProcessHelper.LastRunningGameProductVersion,
                     TelemetryPluginVersion = scs?.DllVersion.ToString(),
                     TimeScale = scs?.CommonValues?.Scale ?? 0f,
                     NextRestStopTime = scs?.CommonValues?.NextRestStopTime?.Date ?? DateTime.MinValue
@@ -49,7 +54,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
                 return new TelemetryV1
                 {
-                    ServerVersion = 3,
+                    ServerVersion = 4,
                     Game = game,
                     Truck = truck,
                     Trailers = trailers,
