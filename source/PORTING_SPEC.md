@@ -141,9 +141,17 @@ deletes them, so no commit is left un-buildable on the target.
   valid JSON), 404s, graceful SIGTERM; systemd unit validates; Release build warning-free.
 - Cleanup — removed `#if DEBUG` console cruft (CS0168).
 
-**PORT COMPLETE on branch `linux-port`.** Remaining real-world gap: end-to-end
-validation against the actual native Linux game + `.so` plugin writing
-`/dev/shm/TSGPSTelemetry` (needs the game/plugin; the server side is done and the
-transport is exercised against a synthetic segment). `SCSSdkClient/SCSSdkTelemetry.cs`
-is unused dead code (optional future prune). Game restart without server restart keeps
-a stale mapping until restart (known minor limitation).
+**PORT COMPLETE + VALIDATED END-TO-END on branch `linux-port`.** 2026-07-13: tested
+against the real native Linux ETS2 + the Linux plugin (`trucksim-gps-plugin` branch
+`linux-port`) writing `/dev/shm/TSGPSTelemetry`. Server returns live telemetry
+(`connected:true`, ETS2, game 1.19, plugin rev 12, real truck). 
+
+Bug found and fixed during that test: once hooked, the reader stayed bound to the
+plugin's shm segment even after the plugin `shm_unlink`ed it on game shutdown (POSIX
+keeps deleted mappings alive), so after a game restart it read `SdkActive=false`
+forever ("not connected" with stale config). Fix: `ScsTelemetryDataReader` re-opens
+the path when the mapped data is inactive while the game runs, picking up the fresh
+segment. Verified live + via a stale/replace repro. The former "stale mapping"
+limitation is resolved.
+
+`SCSSdkClient/SCSSdkTelemetry.cs` is unused dead code (optional future prune).
