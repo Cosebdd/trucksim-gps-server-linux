@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.IO;
 using System.Text;
 using Funbit.Ets.Telemetry.Server.Data;
@@ -13,8 +12,7 @@ namespace Funbit.Ets.Telemetry.Server.Controllers
         public const string TelemetryApiUriPath = "/api/ets2/telemetry";
         const string TestTelemetryJsonFileName = "Ets2TestTelemetry.json";
 
-        static readonly bool UseTestTelemetryData = Convert.ToBoolean(
-            ConfigurationManager.AppSettings["UseEts2TestTelemetryData"]);
+        static readonly bool UseTestTelemetryData = ServerConfig.Current.UseTestTelemetry;
 
         public static string GetEts2TelemetryJson()
         {
