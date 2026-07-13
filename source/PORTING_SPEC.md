@@ -127,6 +127,23 @@ deletes them, so no commit is left un-buildable on the target.
 - A2 done — controllers decoupled from OWIN/SignalR/WebApi; both now `static`.
 - A3 done — `ServerConfig` (env vars) added; controller off `ConfigurationManager`.
 - A4 done — `TelemetryServerHost` extracted (new file, `MainForm` untouched).
-- **NEXT: A5** — flip project to SDK-style net8.0 console; add `Program.cs`
-  (drives `TelemetryServerHost`, SIGINT/SIGTERM) + `log4net.config`; delete old
-  `Program.cs`/`App.config`/`packages.config`; `<Compile Remove>` all Windows files.
+- A5 done — SDK-style net8.0 console; `Program.cs` (SIGINT/SIGTERM) + `log4net.config`;
+  env config; log4net 3.3.2. Verified: build green, endpoints serve, graceful SIGTERM.
+- A6 done — deleted all Windows-only source/resources/installer; csproj simplified.
+- B1 done — `SharedMemory` uses file-backed read-only `CreateFromFile`; CA1416 cleared.
+- B2 done — reader uses `ServerConfig.SharedMemoryPath` + reconnect-on-read (gated by
+  the process scan). Verified against a real Linux segment: serves, no crash.
+- B3 done — `Ets2ProcessHelper` verified Linux-correct; removed misleading comments.
+- C1/C3 — graceful shutdown + test-telemetry/status page verified in A5 (single-instance
+  is YAGNI for a systemd-managed daemon).
+- C2 done — systemd user unit `packaging/trucksim-gps-server.service` + Linux README.
+- D1 done — published artifact serves GET / (200), GET/POST /api/ets2/telemetry (200,
+  valid JSON), 404s, graceful SIGTERM; systemd unit validates; Release build warning-free.
+- Cleanup — removed `#if DEBUG` console cruft (CS0168).
+
+**PORT COMPLETE on branch `linux-port`.** Remaining real-world gap: end-to-end
+validation against the actual native Linux game + `.so` plugin writing
+`/dev/shm/TSGPSTelemetry` (needs the game/plugin; the server side is done and the
+transport is exercised against a synthetic segment). `SCSSdkClient/SCSSdkTelemetry.cs`
+is unused dead code (optional future prune). Game restart without server restart keeps
+a stale mapping until restart (known minor limitation).
