@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 using SCSSdkClient.Object;
 
@@ -66,14 +67,12 @@ namespace SCSSdkClient {
             try {
                 RawData = new byte[mapSize];
 
-                // Open the map and create a "memory view" at the begin (byte 0)
-                _memoryMappedHandle = MemoryMappedFile.CreateOrOpen(map, mapSize, MemoryMappedFileAccess.ReadWrite);
-                _memoryMappedView = _memoryMappedHandle.CreateViewAccessor(0, mapSize);
+                _memoryMappedHandle = MemoryMappedFile.CreateFromFile(
+                    map, FileMode.Open, null, mapSize, MemoryMappedFileAccess.Read);
+                _memoryMappedView = _memoryMappedHandle.CreateViewAccessor(0, mapSize, MemoryMappedFileAccess.Read);
 
-                // Mark as a success.
                 Hooked = true;
             } catch (Exception e) {
-                // We were unable to hook onto the map.
                 Hooked = false;
                 HookException = e;
             }
