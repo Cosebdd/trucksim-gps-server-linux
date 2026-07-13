@@ -85,17 +85,9 @@ namespace Funbit.Ets.Telemetry.Server.Helpers
 
                                         LastRunningGamePath = gameRoot;
                                         LastRunningGameProductVersion = FileVersionInfo.GetVersionInfo(exePath).ProductVersion;
-#if DEBUG
-                                        Console.WriteLine($"PROCESS DEBUG: Exe path: '{exePath}'");
-                                        Console.WriteLine($"PROCESS DEBUG: Game root: '{LastRunningGamePath}'");
-                                        Console.WriteLine($"PROCESS DEBUG: Game product version: '{LastRunningGameProductVersion}'");
-#endif
                                     }
-                                    catch (Exception ex)
+                                    catch (Exception)
                                     {
-#if DEBUG
-                                        Console.WriteLine($"PROCESS DEBUG: Failed to get process path: {ex.Message}");
-#endif
                                         LastRunningGamePath = null;
                                         LastRunningGameProductVersion = null;
                                     }
