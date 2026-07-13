@@ -70,8 +70,10 @@ deletes them, so no commit is left un-buildable on the target.
   `TSGPS_BROADCAST_URL`, `TSGPS_BROADCAST_RATE`=10, `TSGPS_BROADCAST_USER`/`_PASSWORD`).
   Replace all `ConfigurationManager.AppSettings[...]` reads.
 - **A4** Extract `TelemetryServerHost` from `MainForm`: platform-agnostic lifecycle
-  (start/stop `MinimalHttpServer`, status + broadcast via `System.Threading.Timer` and
-  `HttpClient`). `MainForm` delegates to it (legacy build still compiles).
+  (start/stop `MinimalHttpServer`, optional broadcast via `System.Threading.Timer` and
+  `HttpClient`). Added as a NEW file only; the legacy `.csproj` uses explicit
+  `<Compile Include>` items so it is not compiled by the old build and `MainForm`
+  (deleted in A6) is left untouched — no throwaway delegation wiring.
 - **A5** Convert to SDK-style `net8.0` console project. New `.csproj`
   (`OutputType=Exe`, `PackageReference` for Newtonsoft.Json + log4net,
   `<Compile Remove>` for every Windows-only file). Delete old `Program.cs`,
@@ -119,4 +121,12 @@ deletes them, so no commit is left un-buildable on the target.
 
 ## 5. Status log (append one line per landed commit)
 
-- (none yet — Phase A not started)
+- Branch `linux-port` off `master`.
+- docs: add this spec.
+- A1 done — ignore `.idea`/`.vs`.
+- A2 done — controllers decoupled from OWIN/SignalR/WebApi; both now `static`.
+- A3 done — `ServerConfig` (env vars) added; controller off `ConfigurationManager`.
+- A4 done — `TelemetryServerHost` extracted (new file, `MainForm` untouched).
+- **NEXT: A5** — flip project to SDK-style net8.0 console; add `Program.cs`
+  (drives `TelemetryServerHost`, SIGINT/SIGTERM) + `log4net.config`; delete old
+  `Program.cs`/`App.config`/`packages.config`; `<Compile Remove>` all Windows files.
