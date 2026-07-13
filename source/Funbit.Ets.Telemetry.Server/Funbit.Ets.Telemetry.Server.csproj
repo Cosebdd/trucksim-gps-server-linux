@@ -24,20 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="MainForm*.cs" />
-    <Compile Remove="SetupForm*.cs" />
-    <Compile Remove="UpdateForm.cs" />
-    <Compile Remove="Setup/**/*.cs" />
-    <Compile Remove="Helpers/Win32Uac.cs" />
-    <Compile Remove="Helpers/KeyboardHelper.cs" />
-    <Compile Remove="Helpers/ProcessHelper.cs" />
-    <Compile Remove="Helpers/ExceptionExtensions.cs" />
-    <Compile Remove="Properties/Resources.Designer.cs" />
-    <Compile Remove="Properties/Settings.Designer.cs" />
-    <EmbeddedResource Remove="**/*.resx" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Ets2TestTelemetry.json" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="log4net.config" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
