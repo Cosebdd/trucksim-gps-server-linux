@@ -65,14 +65,9 @@ namespace Funbit.Ets.Telemetry.Server.Helpers
                                         string exePath = process.MainModule.FileName;
                                         string exeDir = Path.GetDirectoryName(exePath);
 
-                                        // The exe is typically in bin\win_x64 or bin\win_x86, so we need to go up to the game root
-                                        // Example: F:\SteamLibrary\steamapps\common\American Truck Simulator\bin\win_x64\amtrucks.exe
-                                        // We want: F:\SteamLibrary\steamapps\common\American Truck Simulator
-
                                         string gameRoot = null;
                                         DirectoryInfo currentDir = new DirectoryInfo(exeDir);
 
-                                        // Go up directories until we find one with base.scs and bin folder
                                         while (currentDir != null && currentDir.Parent != null)
                                         {
                                             string testPath = currentDir.FullName;
