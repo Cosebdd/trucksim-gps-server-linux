@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git reset *)",
+      "Bash(git add *)",
+      "Bash(git commit -q -m 'docs: add Linux port spec *)",
+      "Bash(git commit -q -m 'chore: ignore IDE metadata folders \\(.idea, .vs\\) *)",
+      "Bash(git rm *)",
+      "Bash(git commit -q -m 'refactor: decouple controllers from dead OWIN/SignalR/WebApi host *)"
+    ]
+  }
+}
