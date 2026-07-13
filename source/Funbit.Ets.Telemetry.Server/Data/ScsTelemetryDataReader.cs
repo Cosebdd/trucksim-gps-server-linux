@@ -8,9 +8,8 @@ namespace Funbit.Ets.Telemetry.Server.Data
 {
     public class ScsTelemetryDataReader : IDisposable
     {
-        const string ScsTelemetryMapName = "Local\\TSGPSTelemetry";
-
         readonly SharedMemory _sharedMemory = new SharedMemory();
+        readonly string _mapPath = ServerConfig.Current.SharedMemoryPath;
         readonly object _lock = new object();
 
         static readonly Lazy<ScsTelemetryDataReader> _instance = new Lazy<ScsTelemetryDataReader>(() => new ScsTelemetryDataReader());
@@ -18,8 +17,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         ScsTelemetryDataReader()
         {
-            // Create or open the shared memory mapping
-            _sharedMemory.Connect(ScsTelemetryMapName);
+            _sharedMemory.Connect(_mapPath);
         }
 
         public bool IsConnected => _sharedMemory.Hooked;
@@ -28,10 +26,15 @@ namespace Funbit.Ets.Telemetry.Server.Data
         {
             lock (_lock)
             {
-                var scs = _sharedMemory.Update<SCSTelemetry>();
+                var gameRunning = Ets2ProcessHelper.IsEts2Running;
 
-                // Plugin can leave SdkActive=true after a hard crash; trust the process scan.
-                if (!Ets2ProcessHelper.IsEts2Running)
+                if (!_sharedMemory.Hooked && gameRunning)
+                    _sharedMemory.Connect(_mapPath);
+
+                var scs = _sharedMemory.Hooked ? _sharedMemory.Update<SCSTelemetry>() : null;
+
+                // Plugin can leave SdkActive set after a hard crash; trust the process scan.
+                if (!gameRunning)
                     scs = null;
 
                 var game = new GameV1
