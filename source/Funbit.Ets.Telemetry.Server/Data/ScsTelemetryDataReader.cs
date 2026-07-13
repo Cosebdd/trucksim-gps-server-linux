@@ -22,20 +22,33 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         public bool IsConnected => _sharedMemory.Hooked;
 
+        SCSTelemetry ReadCurrentSegment()
+        {
+            if (!_sharedMemory.Hooked)
+                _sharedMemory.Connect(_mapPath);
+
+            var scs = _sharedMemory.Hooked ? _sharedMemory.Update<SCSTelemetry>() : null;
+
+            // The plugin unlinks its shared-memory segment on shutdown and creates a fresh
+            // one on the next launch; a mapping to the old segment survives deletion and
+            // reads SdkActive=false forever, so re-open the path to pick up the new segment.
+            if (scs?.SdkActive != true)
+            {
+                _sharedMemory.Connect(_mapPath);
+                scs = _sharedMemory.Hooked ? _sharedMemory.Update<SCSTelemetry>() : null;
+            }
+
+            return scs;
+        }
+
         public TelemetryV1 Read()
         {
             lock (_lock)
             {
                 var gameRunning = Ets2ProcessHelper.IsEts2Running;
 
-                if (!_sharedMemory.Hooked && gameRunning)
-                    _sharedMemory.Connect(_mapPath);
-
-                var scs = _sharedMemory.Hooked ? _sharedMemory.Update<SCSTelemetry>() : null;
-
                 // Plugin can leave SdkActive set after a hard crash; trust the process scan.
-                if (!gameRunning)
-                    scs = null;
+                var scs = gameRunning ? ReadCurrentSegment() : null;
 
                 var game = new GameV1
                 {
