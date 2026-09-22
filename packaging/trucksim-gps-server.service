@@ -1,0 +1,15 @@
+[Unit]
+Description=TruckSim GPS Telemetry Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/.local/share/trucksim-gps-server
+ExecStart=/usr/bin/dotnet %h/.local/share/trucksim-gps-server/TruckSimGPS_Server.dll
+Restart=on-failure
+RestartSec=5
+Environment=TSGPS_PORT=31377
+
+[Install]
+WantedBy=default.target

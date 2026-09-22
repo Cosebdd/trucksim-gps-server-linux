@@ -1,4 +1,6 @@
 /_hg
+/source/.idea
+/source/.vs
 /source/Funbit.Ets.Telemetry.Server/Funbit.Ets.Telemetry.Server.csproj.user
 /source/Funbit.Ets.Telemetry.Server/bin
 /source/Funbit.Ets.Telemetry.Server/obj

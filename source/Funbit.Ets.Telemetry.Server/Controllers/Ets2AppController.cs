@@ -1,15 +1,8 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Web.Http;
-using Funbit.Ets.Telemetry.Server.Helpers;
+﻿using Funbit.Ets.Telemetry.Server.Helpers;
 
 namespace Funbit.Ets.Telemetry.Server.Controllers
 {
-    [RoutePrefix("")]
-    public class Ets2AppController : ApiController
+    public static class Ets2AppController
     {
         public const string TelemetryAppUriPath = "/";
 
@@ -132,17 +125,6 @@ namespace Funbit.Ets.Telemetry.Server.Controllers
             return StatusPageHtmlTemplate
                 .Replace("{VERSION}", AssemblyHelper.Version)
                 .Replace("{BYPASS_NOTICE}", bypassNotice);
-        }
-
-        [HttpGet]
-        [Route("", Name = "GetRoot")]
-        public HttpResponseMessage GetRoot()
-        {
-            var html = GetStatusPageHtml(showBypassNotice: false); // OWIN mode, no bypass
-            var response = Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(html, Encoding.UTF8, "text/html");
-            response.Headers.CacheControl = new CacheControlHeaderValue { NoCache = true };
-            return response;
         }
     }
 }

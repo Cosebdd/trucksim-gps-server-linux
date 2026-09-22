@@ -8,9 +8,8 @@ namespace Funbit.Ets.Telemetry.Server.Data
 {
     public class ScsTelemetryDataReader : IDisposable
     {
-        const string ScsTelemetryMapName = "Local\\TSGPSTelemetry";
-
         readonly SharedMemory _sharedMemory = new SharedMemory();
+        readonly string _mapPath = ServerConfig.Current.SharedMemoryPath;
         readonly object _lock = new object();
 
         static readonly Lazy<ScsTelemetryDataReader> _instance = new Lazy<ScsTelemetryDataReader>(() => new ScsTelemetryDataReader());
@@ -18,21 +17,38 @@ namespace Funbit.Ets.Telemetry.Server.Data
 
         ScsTelemetryDataReader()
         {
-            // Create or open the shared memory mapping
-            _sharedMemory.Connect(ScsTelemetryMapName);
+            _sharedMemory.Connect(_mapPath);
         }
 
         public bool IsConnected => _sharedMemory.Hooked;
+
+        SCSTelemetry ReadCurrentSegment()
+        {
+            if (!_sharedMemory.Hooked)
+                _sharedMemory.Connect(_mapPath);
+
+            var scs = _sharedMemory.Hooked ? _sharedMemory.Update<SCSTelemetry>() : null;
+
+            // The plugin unlinks its shared-memory segment on shutdown and creates a fresh
+            // one on the next launch; a mapping to the old segment survives deletion and
+            // reads SdkActive=false forever, so re-open the path to pick up the new segment.
+            if (scs?.SdkActive != true)
+            {
+                _sharedMemory.Connect(_mapPath);
+                scs = _sharedMemory.Hooked ? _sharedMemory.Update<SCSTelemetry>() : null;
+            }
+
+            return scs;
+        }
 
         public TelemetryV1 Read()
         {
             lock (_lock)
             {
-                var scs = _sharedMemory.Update<SCSTelemetry>();
+                var gameRunning = Ets2ProcessHelper.IsEts2Running;
 
-                // Plugin can leave SdkActive=true after a hard crash; trust the process scan.
-                if (!Ets2ProcessHelper.IsEts2Running)
-                    scs = null;
+                // Plugin can leave SdkActive set after a hard crash; trust the process scan.
+                var scs = gameRunning ? ReadCurrentSegment() : null;
 
                 var game = new GameV1
                 {
@@ -122,6 +138,11 @@ namespace Funbit.Ets.Telemetry.Server.Data
                 WipersOn = dash?.Wipers ?? false,
                 ParkBrakeOn = motor?.BrakeValues?.ParkingBrake ?? false,
                 MotorBrakeOn = motor?.BrakeValues?.MotorBrake ?? false,
+                DifferentialLock = curr?.DifferentialLock ?? false,
+                LiftAxle= curr?.LiftAxle ?? false,
+                LiftAxleIndicator= curr?.LiftAxleIndicator ?? false,
+                TrailerLiftAxle= curr?.TrailerLiftAxle ?? false,
+                TrailerLiftAxleIndicator= curr?.TrailerLiftAxleIndicator ?? false,
 
                 AirPressure = motor?.BrakeValues?.AirPressure ?? 0f,
                 AirPressureWarningOn = dash?.WarningValues?.AirPressure ?? false,
@@ -141,6 +162,7 @@ namespace Funbit.Ets.Telemetry.Server.Data
                 BatteryVoltage = dash?.BatteryVoltage ?? 0f,
                 BatteryVoltageWarningOn = dash?.WarningValues?.BatteryVoltage ?? false,
                 BatteryVoltageWarningValue = warn?.BatteryVoltage ?? 0f,
+                FuelWarningOn= dash?.WarningValues?.FuelW ?? false,
 
                 LightsDashboardValue = lights?.DashboardBacklight ?? 0f,
                 LightsDashboardOn = (lights?.DashboardBacklight ?? 0f) > 0f,
